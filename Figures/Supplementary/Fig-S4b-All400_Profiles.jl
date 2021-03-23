@@ -1,5 +1,5 @@
 
-using PoresIdentifiability
+using Pores
 using PyPlot, StatsBase, JLD2
 include("../Preferences.jl")
 
@@ -7,8 +7,8 @@ include("../Preferences.jl")
 figS4a,axs = subplots(1,4,figsize=(6.7,1.8))
 
 # Load results
-@load "Results/Supplementary/All400_Profiles_Individual.jld2"
-@load "Results/Supplementary/All400_MLE.jld2"
+@load "Results/Supplementary/Saved/All400_Profiles_Individual.jld2"
+@load "Results/Supplementary/Saved/All400_MLE_Individual.jld2"
 
 # Options
 LineStyles = ["-","--"]
@@ -38,12 +38,6 @@ for i_ψ = 1:4
         θ̂ = All400_MLE_Individual[i_C][i_P][:θ̂][i_ψ]
         ax.plot(θ̂,0.0,".",color=PoreSizeCols[i_P])
 
-        # if i_C == 1
-        #
-        #
-        #
-        # end
-
     # 95% confidence interval cutoff
     xlimit = ax.get_xlim()
     ax.plot(xlimit,[-1.92,-1.92],"k:")
@@ -68,5 +62,5 @@ end
 
 NumberPlots!(axs)
 plt.tight_layout(pad=1.0)
-savefig("Figures/Supplementary/Fig-S4b-All400_Profiles.pdf")
+savefig("Figures/Supplementary/Saved/Fig-S4b-All400_Profiles.pdf")
 display(figS4a)

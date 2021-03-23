@@ -1,3 +1,18 @@
+#=
+#
+#   InstallRequiredPackages.jl
+#
+#   Run to install all required julia packages called by Pores
+#
+#   Alexander P. Browning
+#       School of Mathematical Sciences
+#       Queensland University of Technology
+#       ap.browning@qut.edu.au  (institution)
+#       ap.browning@icloud.com  (persistent)
+#       https://alexbrowning.me
+#
+=#
+
 using Pkg;
 
 Pkg.add("PyPlot")

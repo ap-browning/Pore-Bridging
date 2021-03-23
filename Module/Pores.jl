@@ -1,16 +1,25 @@
 #=
-
-    PoresIdentifiability.jl
-
-    A Julia module for the pore identifiability project
-
-    author:  Alexander P Browning
-    contact: ap.browning@icloud.com
-    push!(LOAD_PATH,"C:/Users/browniap/OneDrive - Queensland University of Technology/Desktop/Pores/Module")
-
+#
+#   Pores.jl
+#
+#   A Julia module that contains all functions and data used to produce the results.
+#
+#   The containing folder must be in the Julia PATH to be callable:
+#       push!(LOAD_PATH,"/path/to/repo/Module")
+#       using Pores
+#
+#   Alexander P. Browning
+#       School of Mathematical Sciences
+#       Queensland University of Technology
+#       ap.browning@qut.edu.au  (institution)
+#       ap.browning@icloud.com  (persistent)
+#       https://alexbrowning.me
+#
 =#
-module PoresIdentifiability
 
+module Pores
+
+    # Load packages
     using PyPlot
     using DifferentialEquations
     using CSV
@@ -22,12 +31,14 @@ module PoresIdentifiability
     using JLD2
     using NLopt
 
+    # Load functions
     include("Functions/SolvePDE.jl")
     include("Functions/SummaryStatistics.jl")
     include("Functions/Maximise.jl")
     include("Functions/Profile.jl")
     include("Functions/LogLikelihood.jl")
 
+    # Functions callable once `using Pores` is called
     export SolvePDE, SummaryStatistics, Maximise, FitModel, Profile, LogLikelihood, GetΘ, ConfidenceInterval
 
     # Import data
@@ -42,6 +53,7 @@ module PoresIdentifiability
     # Set of all summary statistics:    Sᵢ ∈ S
     S = [:S1_Density,:S2_Coverage,:S3_Circularity,:S4_EdgeDensity]
 
+    # Variables callable once `using Pores` is called
     export Data, P, T, S
-
+    
 end

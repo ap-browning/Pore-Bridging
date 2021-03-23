@@ -1,5 +1,5 @@
 
-using PoresIdentifiability
+using Pores
 using PyPlot, StatsBase, JLD2
 include("Preferences.jl")
 
@@ -7,15 +7,15 @@ include("Preferences.jl")
 fig6,axs = subplots(5,4,figsize=(6.7,6.0))
 
 # Load results
-@load "Results/Profiles_Individual.jld2"
-@load "Results/Profiles_Combined.jld2"
-@load "Results/MLE_Individual.jld2"
-@load "Results/MLE_Combined.jld2"
+@load "Results/Saved/Profiles_Individual.jld2"
+@load "Results/Saved/Profiles_Combined.jld2"
+@load "Results/Saved/MLE_Individual.jld2"
+@load "Results/Saved/MLE_Combined.jld2"
 
 # Options
 LineStyles = ["-","--"]
 Ψnames     = ["D","λ","K","u₀"]
-Ψticks     = [0.:500.:2000., 0.:0.5:2., 0.002:0.001:0.005, 0.0:0.0005:0.002]
+Ψticks     = [0.0:500.:2000., 0.:0.5:2., 0.002:0.001:0.005, 0.0:0.0005:0.002]
 
 # Loop over P and parameters
 for (i_P,L) ∈ enumerate([P;0]), i_ψ = 1:4
@@ -95,5 +95,5 @@ end
 
 NumberPlots!(axs)
 plt.tight_layout(pad=0.0,h_pad=0.2,w_pad=0.2)
-savefig("Figures/Fig-6-Profiles.pdf")
+savefig("Figures/Saved/Fig-6-Profiles.pdf")
 display(fig6)

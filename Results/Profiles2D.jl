@@ -1,14 +1,20 @@
 #=
-
-    Profiles.jl
-
-    Compute maximum likelihood estimates for the Porous-Fisher model with
-    quadratic noise function.
-
+#
+#   Profiles2D.jl
+#
+#   Compute bivadiate profile likelihood functions.
+#
+#   Alexander P. Browning
+#       School of Mathematical Sciences
+#       Queensland University of Technology
+#       ap.browning@qut.edu.au  (institution)
+#       ap.browning@icloud.com  (persistent)
+#       https://alexbrowning.me
+#
 =#
 
-# Load module
-using PoresIdentifiability
+# Load modules
+using Pores
 using StatsBase, Statistics, .Threads, JLD2, TimerOutputs
 
 # Load options
@@ -18,7 +24,7 @@ include("Options.jl")
 include("StandardDeviations.jl")
 
 # Load maximum likelihood estimates
-@load "Results/MLE_Individual.jld2"
+@load "Results/Saved/MLE_Individual.jld2"
 
 # Summary statistic combinations to use
 C = [:S1_Density, :S2_Coverage]
@@ -31,9 +37,10 @@ ub_p  = [1500.0,  2.0,    0.0045,  0.002]
 # Initialise storage
 Profiles2D = [Dict() for i = 1:length(P)]
 
-# Loop over C and P
+# Compute and time main result
 t1 = @elapsed begin
 
+    # Loop over C and P
     @threads for i_P = 1:4
         L = P[i_P]
 
@@ -154,4 +161,4 @@ Profiles2D_Settings = Dict(
     :MLE_results => MLE_Individual, :MLE_settings => MLE_Individual_Settings)
 
 # Save
-@save "Results/Profiles2D.jld2" Profiles2D Profiles2D_Settings
+@save "Results/Saved/Profiles2D.jld2" Profiles2D Profiles2D_Settings

@@ -1,12 +1,20 @@
 #=
-
-    StandardDeviations.jl
-
-    Compute standard deviation for each summary statistic as a function of mean.
-
+#
+#   StandardDeviations.jl
+#
+#   Compute standard deviation for each summary statistic as a function of mean.
+#
+#   Alexander P. Browning
+#       School of Mathematical Sciences
+#       Queensland University of Technology
+#       ap.browning@qut.edu.au  (institution)
+#       ap.browning@icloud.com  (persistent)
+#       https://alexbrowning.me
+#
 =#
 
-using PoresIdentifiability
+# Load modules
+using Pores
 using StatsBase, Statistics, .Threads, JLD2, DataFrames
 
 ## Create data frame of means and stds for each summary statistic
@@ -22,6 +30,7 @@ using StatsBase, Statistics, .Threads, JLD2, DataFrames
 # Pre-specify intercept as 10% of the maximum
 σ_intercepts = Dict(S .=> [0.1*maximum(filter(isfinite,μσ_df[Sᵢ].σ)) for Sᵢ ∈ S])
 
+# Loop through summary statistics
 for (i,Sᵢ) ∈ enumerate(S)
 
     # Generic form of quadratic
@@ -32,4 +41,4 @@ for (i,Sᵢ) ∈ enumerate(S)
 end
 
 ## Save results
-@save "Results/StandardDeviations.jld2" μσ_df σ σ_intercepts
+@save "Results/Saved/StandardDeviations.jld2" μσ_df σ σ_intercepts

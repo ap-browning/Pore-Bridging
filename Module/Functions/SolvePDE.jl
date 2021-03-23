@@ -1,12 +1,28 @@
 #=
-    PorePDE.jl
-    Solve Porous-Fisher equation on an L × L domain
-    author:  Alexander P Browning
-    contact: ap.browning@icloud.com
+#
+#   SolvePDE.jl
+#
+#   Solve the Porous-Fisher equation using method of lines on a square domain
+#
+#   Alexander P. Browning
+#       School of Mathematical Sciences
+#       Queensland University of Technology
+#       ap.browning@qut.edu.au  (institution)
+#       ap.browning@icloud.com  (persistent)
+#       https://alexbrowning.me
+#
 =#
 
-function SolvePDE(D::Float64,λ::Float64,K::Float64,α::Float64,T::Array{Float64,1};
-                 L::Float64=300.0,t₀::Float64=0.0,u₀::Float64=0.001,N::Int=51,method=Tsit5())
+function SolvePDE(D::Float64,               # Diffusivity
+                  λ::Float64,               # Proliferation rate
+                  K::Float64,               # Carrying capacity
+                  α::Float64,               # Exponent (= 1.0 for Porous-Fisher)
+                  T::Array{Float64,1};      # Times to output solution
+                  L::Float64=300.0,         # Domain length
+                  t₀::Float64=0.0,          # Time at which to apply initial condition
+                  u₀::Float64=0.001,        # Initial density on boundary
+                  N::Int=51,                # Number of nodes (on L / 2)
+                  method=Tsit5())           # ODE method
 
     # Calculate constants
 
@@ -16,13 +32,14 @@ function SolvePDE(D::Float64,λ::Float64,K::Float64,α::Float64,T::Array{Float64
         # β
         β  = D / (2 * K^α * Δx^2)
 
-        # Boundary lookup functions (reflecting)
+        # Boundary index lookup functions (reflecting)
         IndexUp = i -> i != N ? i + 1 : N - 1
         IndexDn = i -> i != 1 ? i - 1 : 2
 
     # Discretised PDE
     function f!(dudt::Array{Float64,2},U::Array{Float64,2},p,t)
 
+        # Type of problem
         if α == 0.0
             # Fisher
             V = ones(size(U))
@@ -34,8 +51,7 @@ function SolvePDE(D::Float64,λ::Float64,K::Float64,α::Float64,T::Array{Float64
             V = @. abs(U)^α
         end
 
-
-        # Logistic growth
+        # Logistic growth everywhere (including boundary)
         @. dudt = λ * U * (1.0 - U / K)
 
         # Inner nodes
@@ -67,12 +83,12 @@ function SolvePDE(D::Float64,λ::Float64,K::Float64,α::Float64,T::Array{Float64
 
     end
 
-    # Fill initial condition
+    # Initial condition on boundaries
     U::Array{Float64,2} = zeros(N,N)
     U[1,:] .= u₀
     U[:,1] .= u₀
 
-    # Solve
+    # Solve ODE and return solution
     return solve(ODEProblem(f!,U,(t₀,T[end])),method,saveat=T)
 
 end

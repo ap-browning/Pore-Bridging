@@ -1,5 +1,5 @@
 
-using PoresIdentifiability
+using Pores
 using JLD2, PyPlot, StatsBase
 include("../Preferences.jl")
 
@@ -7,7 +7,7 @@ include("../Preferences.jl")
 figS4a,axs = subplots(1,4,figsize=(6.7,1.6))
 
 # Load results
-@load "Results/Supplementary/All400_MLE.jld2"
+@load "Results/Supplementary/Saved/All400_MLE_Individual.jld2"
 
 # Options
 LineStyles = ["-","--",":"]
@@ -63,5 +63,5 @@ end
 
 NumberPlots!(axs)
 plt.tight_layout(pad=0.0,h_pad=1.0,w_pad=1.0)
-savefig("Figures/Supplementary/Fig-S4a-All400_Fits.pdf")
+savefig("Figures/Supplementary/Saved/Fig-S4a-All400_Fits.pdf")
 display(figS4a)

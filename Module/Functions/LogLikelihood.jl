@@ -7,31 +7,28 @@
 #   Alexander P. Browning
 #       School of Mathematical Sciences
 #       Queensland University of Technology
-#       ap.browning@qut.edu.au
+#       ap.browning@qut.edu.au  (institution)
+#       ap.browning@icloud.com  (persistent)
 #       https://alexbrowning.me
 #
 =#
 
-function LogLikelihood(θ,
-                Data;
-                β   = ones(0),
-                i_β = ones(Int,0),
-                Cᵢ  = [:S1_Coverage],
-                σ   = μ -> 1.0*length(μ),
-                L   = 300.0,
-                t₀  = 1.0,
-                kwargs...
+function LogLikelihood(θ,                   # Parameters
+                Data;                       # Dataframe used for inference
+                β   = ones(0),              # Fixed parameters
+                i_β = ones(Int,0),          # Indices of fixed parameters
+                Cᵢ  = [:S1_Coverage],       # Summary statistics included in likelihood function
+                σ   = μ -> 1.0*length(μ),   # Standard deviation as function of mean (should be per summary statistic)
+                L   = 300.0,                # Domain size
+                t₀  = 1.0,                  # Time at which to apply the initial condition
+                kwargs...                   # Extra arguments to pass to PDE solver
             )
 
-    # Full parameter set
-    n_θ = length(θ) + length(β)
-    i_θ = setdiff(1:n_θ,i_β)
-    Θ   = zeros(n_θ)
-    Θ[i_β] = β
-    Θ[i_θ] = θ
+    # Full parameter set, Θ = (θ,β) (need to reorder)
+    Θ = GetΘ(θ,β,i_β)
     D,λ,K,α,τ,u₀ = Θ
 
-    # Times for inference
+    # Times included in inference
     T₁  = T[T .> t₀]
 
     # Subset data
@@ -46,31 +43,33 @@ function LogLikelihood(θ,
     # Loop through time points
     for (i_T,t) ∈ enumerate(T₁)
 
-        # Model prediction (mean)
+        # Summarise PDE solution at time t as thge model prediction (mean)
         μₘ = SummaryStatistics(sol(t),L=L,τₐ=τ*K)
 
-        # Loop through summary statistics
+        # Loop through summary statistics that are included
         for Sᵢ ∈ Cᵢ
 
-            # Standard deviation
+            # Standard deviation for each summary statistic
             σₘ = σ[Sᵢ](μₘ[Sᵢ])
 
-            # Loop through observations, yₒ ∼ N(μₘ,σₘ)
+            # Loop through observations, yₒ ∼ N(μₘ,σₘ) and add to log-likelihood
             Yₒ = Data₁[Data₁.Day .== t, Sᵢ]
             for yᵢ ∈ filter(isfinite,Yₒ)
 
                 LL += -log(σₘ * √(2π)) - 0.5 * (yᵢ - μₘ[Sᵢ])^2 / σₘ^2
 
-            end
+            end # yᵢ ∈ filter(isfinite,Yₒ)
 
-        end
+        end # for Sᵢ ∈ Cᵢ
 
-    end
+    end # (i_T,t) ∈ enumerate(T₁)
 
+    # Return log-likelihood function
     return LL
 
 end
 
+# Sub-routine that converts partitioned parameter space (θ,β) into full parameter space Θ
 function GetΘ(θ,β,i_β)
 
     n_θ = length(θ) + length(β)
@@ -82,64 +81,3 @@ function GetΘ(θ,β,i_β)
     return Θ
 
 end
-#
-# function LogLikelihood(θ,
-#                 Data;
-#                 β   = ones(0),
-#                 i_β = ones(Int,0),
-#                 Cᵢ  = [:S1_Coverage],
-#                 Σ   = diagm(ones(length(Cᵢ))),
-#                 L   = 300.0,
-#                 t₀  = 1.0,
-#                 kwargs...
-#             )
-#
-#     detΣ = det(Σ)
-#     invΣ = inv(Σ)
-#
-#     # Full parameter set
-#     n_θ = length(θ) + length(β)
-#     i_θ = setdiff(1:n_θ,i_β)
-#     Θ   = zeros(n_θ)
-#     Θ[i_β] = β
-#     Θ[i_θ] = θ
-#     D,λ,K,α,τ,u₀ = Θ
-#
-#     # Times for inference
-#     T₁  = T[T .> t₀]
-#
-#     # Subset data
-#     Data₁ = Data[(Data.PoreSize .== L),:]
-#
-#     # Solve PDE
-#     sol = SolvePDE(D,λ,K,α,T₁,L=L,u₀=u₀,t₀=t₀,kwargs...)
-#
-#     # Initialise log likelihood
-#     LL = 0.0
-#
-#     # Loop through time points
-#     for (i_T,t) ∈ enumerate(T₁)
-#
-#         # Model prediction (mean)
-#         μₘ_all = SummaryStatistics(sol(t),L=L,τₐ=τ*K)
-#         μₘ = [μₘ_all[Sᵢ] for Sᵢ ∈ Cᵢ]
-#
-#         Xₒ = hcat([Data₁[Data₁.Day .== t, Sᵢ] for Sᵢ ∈ Cᵢ]...)
-#
-#         # Loop through observations
-#         for i = 1:size(Xₒ,1)
-#
-#             xₒ = Xₒ[i,:]
-#             if all(isfinite.(xₒ))
-#
-#                 LL += -2/2 * log(2π) - 0.5 * log(detΣ) - 0.5 * (xₒ - μₘ)' * invΣ * (xₒ - μₘ)
-#
-#             end
-#
-#         end
-#
-#     end
-#
-#     return LL
-#
-# end

@@ -1,19 +1,26 @@
 #=
-
-    MLE.jl
-
-    Compute maximum likelihood estimates for the Porous-Fisher model with
-    quadratic noise function. Repeat analysis using the following summary
-    statistic combinations.
-
-        1. S1_Density and S2_Coverage
-        2. Only S1_Density
-        3. S2_Coverage (and end-time S1_Density)
-
+#
+#   MLE.jl
+#
+#   Compute maximum likelihood estimates for the Porous-Fisher model with
+#   quadratic noise function. Repeat analysis using the following summary
+#   statistic combinations.
+#
+#     1. S1_Density and S2_Coverage
+#     2. Only S1_Density
+#     3. S2_Coverage and end-time S1_Density
+#
+#   Alexander P. Browning
+#       School of Mathematical Sciences
+#       Queensland University of Technology
+#       ap.browning@qut.edu.au  (institution)
+#       ap.browning@icloud.com  (persistent)
+#       https://alexbrowning.me
+#
 =#
 
-# Load module
-using PoresIdentifiability
+# Load modules
+using Pores
 using StatsBase, Statistics, .Threads, JLD2, TimerOutputs
 
 # Load options
@@ -22,6 +29,7 @@ include("Options.jl")
 # Load noise model
 include("StandardDeviations.jl")
 
+################################################
 ## INDIVIDUAL (PER PORE SIZE)
 
 # Summary statistic combinations to use
@@ -30,9 +38,10 @@ C = [[:S1_Density, :S2_Coverage], [:S1_Density], [:S2_Coverage]]
 # Initialise storage
 MLE_Individual = [[Dict() for i = 1:length(P)] for i = 1:length(C)]
 
-# Loop over C and P
+# Compute and time main result
 t1 = @elapsed begin
 
+    # Loop over C and P
     @threads for i_P = 1:4
         L = P[i_P]
         for (i_C,Cᵢ) ∈ enumerate(C)
@@ -48,8 +57,8 @@ t1 = @elapsed begin
             end
 
             # Find maximum likelihood estimate
-            θ̂,L̂   = Maximise(l,θ₀,:GN_DIRECT,lb=lb,ub=ub,maxtime=maxtime)
-            θ̂,L̂   = Maximise(l,θ̂,:LN_BOBYQA,lb=lb,ub=ub,ftol_abs=ftol_abs)
+            θ̂,L̂   = Maximise(l,θ₀,:GN_DIRECT,lb=lb,ub=ub,maxtime=maxtime)   # Global routine
+            θ̂,L̂   = Maximise(l,θ̂,:LN_BOBYQA,lb=lb,ub=ub,ftol_abs=ftol_abs)  # Local routine
 
             # Save results
             push!(MLE_Individual[i_C][i_P], :θ̂  => θ̂)
@@ -69,8 +78,10 @@ MLE_Individual_Settings = Dict(
     :walltime => t1)
 
 # Save
-@save "Results/MLE_Individual.jld2" MLE_Individual MLE_Individual_Settings
+@save "Results/Saved/MLE_Individual.jld2" MLE_Individual MLE_Individual_Settings
 
+
+################################################
 ## COMBINED (ALL PORE SIZES)
 
 # Summary statistic combinations to use
@@ -89,7 +100,7 @@ C   = [:S1_Density,:S2_Coverage]
 # Initialise storage
 MLE_Combined = Dict()
 
-# Calculate combined MLE
+# Calculate and time combined MLE
 t2 = @elapsed begin
 
     # Construct log likelihood function
@@ -99,8 +110,8 @@ t2 = @elapsed begin
              LogLikelihood(θ[[1,2,3,7]],Data₁;β=β,i_β=i_β,L=600.0,Cᵢ=C,σ=σ,t₀=t₀)
 
     # Find maximum likelihood estimate
-    θ̂,L̂   = Maximise(l,θ₀,:GN_DIRECT,lb=lb₁,ub=ub₁,maxtime=maxtime)
-    θ̂,L̂   = Maximise(l,θ̂,:LN_BOBYQA,lb=lb₁,ub=ub₁,ftol_abs=ftol_abs)
+    θ̂,L̂   = Maximise(l,θ₀,:GN_DIRECT,lb=lb₁,ub=ub₁,maxtime=maxtime)     # Global routine
+    θ̂,L̂   = Maximise(l,θ̂,:LN_BOBYQA,lb=lb₁,ub=ub₁,ftol_abs=ftol_abs)    # Local routine
 
     # Save results
     push!(MLE_Combined, :θ̂  => θ̂)
@@ -116,4 +127,4 @@ MLE_Combined_Settings = Dict(
     :walltime => t2)
 
 # Save
-@save "Results/MLE_Combined.jld2" MLE_Combined MLE_Combined_Settings
+@save "Results/Saved/MLE_Combined.jld2" MLE_Combined MLE_Combined_Settings

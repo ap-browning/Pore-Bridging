@@ -1,5 +1,5 @@
 
-using PoresIdentifiability
+using Pores
 using JLD2, PyPlot, StatsBase
 include("../Preferences.jl")
 
@@ -7,7 +7,7 @@ include("../Preferences.jl")
 figS8,axs = subplots(2,4,figsize=(6.7,3))
 
 # Load results
-@load "Results/Supplementary/Fisher_MLE_Individual.jld2"
+@load "Results/Supplementary/Saved/Fisher_MLE_Individual.jld2"
 
 # Options
 LineStyles = ["-","--",":"]
@@ -25,20 +25,20 @@ for (i_P,L) ∈ enumerate(P), (i_ρ,ρᵢ) ∈ enumerate(ρ)
     # Plot data
     ax.plot(Data[Data.PoreSize .== L,ρᵢ[1]],Data[Data.PoreSize .== L,ρᵢ[2]],PoreSizeSymb[i_P],ms=PoreSizeMkSz[i_P],alpha=0.15,c=PoreSizeColsLight[i_P])
 
-    # # Plot solution where all pore sizes considered simultaneously
-    #
-    #     # MLE
-    #     D,λ,K,α,τ,u₀ = GetΘ(MLE_Combined[:θ̂],MLE_Combined_Settings[:β],MLE_Combined_Settings[:i_β])[[1,2,3,4,5,5+i_P]]
-    #
-    #     # Solve and summarise PDE
-    #     sol = SolvePDE(D,λ,K,α,Tfine,L=L,t₀=Fisher_MLE_Individual_Settings[:t₀],u₀=u₀)
-    #     Xplot = zeros(size(Tfine))
-    #     Yplot = zeros(size(Tfine))
-    #     for (i,t) ∈ enumerate(Tfine)
-    #         Xplot[i] = SummaryStatistics(sol(t),L=L,τₐ=τ*K)[ρᵢ[1]]
-    #         Yplot[i] = SummaryStatistics(sol(t),L=L,τₐ=τ*K)[ρᵢ[2]]
-    #     end
-    #     ax.plot(Xplot,Yplot,"-",color="#333333",lw=1)
+    # Plot solution where all pore sizes considered simultaneously
+    
+        # MLE
+        D,λ,K,α,τ,u₀ = GetΘ(Fisher_MLE_Combined[:θ̂],Fisher_MLE_Combined_Settings[:β],Fisher_MLE_Combined_Settings[:i_β])[[1,2,3,4,5,5+i_P]]
+    
+        # Solve and summarise PDE
+        sol = SolvePDE(D,λ,K,α,Tfine,L=L,t₀=Fisher_MLE_Individual_Settings[:t₀],u₀=u₀)
+        Xplot = zeros(size(Tfine))
+        Yplot = zeros(size(Tfine))
+        for (i,t) ∈ enumerate(Tfine)
+            Xplot[i] = SummaryStatistics(sol(t),L=L,τₐ=τ*K)[ρᵢ[1]]
+            Yplot[i] = SummaryStatistics(sol(t),L=L,τₐ=τ*K)[ρᵢ[2]]
+        end
+        ax.plot(Xplot,Yplot,"-",color="#333333",lw=1)
 
     # Plot solution for each set of summary statistics
     for (i_C,Cᵢ) ∈ enumerate(Fisher_MLE_Individual_Settings[:C])
@@ -87,5 +87,5 @@ end
 
 NumberPlots!(axs)
 plt.tight_layout(pad=0.0,h_pad=1.0,w_pad=1.0)
-savefig("Figures/Supplementary/Fig-S8-Fisher_Correlations.pdf")
+savefig("Figures/Supplementary/Saved/Fig-S8-Fisher_Correlations.pdf")
 display(figS8)

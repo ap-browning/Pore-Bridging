@@ -1,5 +1,5 @@
 
-using PoresIdentifiability
+using Pores
 using PyPlot, StatsBase, JLD2
 include("../Preferences.jl")
 
@@ -7,8 +7,8 @@ include("../Preferences.jl")
 fig6,axs = subplots(4,4,figsize=(6.7,5.0))
 
 # Load results
-@load "Results/Supplementary/Fisher_Profiles_Individual.jld2"
-@load "Results/Supplementary/Fisher_MLE_Individual.jld2"
+@load "Results/Supplementary/Saved/Fisher_Profiles_Individual.jld2"
+@load "Results/Supplementary/Saved/Fisher_MLE_Individual.jld2"
 
 # Options
 LineStyles = ["-","--"]
@@ -76,5 +76,5 @@ end
 
 NumberPlots!(axs)
 plt.tight_layout(pad=0.0,h_pad=0.2,w_pad=0.2)
-savefig("Figures/Supplementary/Fig-S9-Fisher_Profiles.pdf")
+savefig("Figures/Supplementary/Saved/Fig-S9-Fisher_Profiles.pdf")
 display(fig6)

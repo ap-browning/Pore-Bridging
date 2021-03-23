@@ -1,5 +1,5 @@
 
-using PoresIdentifiability
+using Pores
 using PyPlot, StatsBase, JLD2
 include("../Preferences.jl")
 
@@ -7,7 +7,7 @@ include("../Preferences.jl")
 figS3,axs = subplots(1,3,figsize=(6.7,2.2))
 
 # Load results
-@load "Results/StandardDeviations.jld2"
+include("../../Results/StandardDeviations.jl")
 
 # Axis limits to use
 ylimits = [[0.0,0.0015],[0.0,0.5],[0.0,0.6]]
@@ -35,5 +35,5 @@ end
 
 NumberPlots!(axs)
 plt.tight_layout()
-savefig("Figures/Supplementary/Fig-S3-StandardDeviations.pdf")
+savefig("Figures/Supplementary/Saved/Fig-S3-StandardDeviations.pdf")
 display(figS3)

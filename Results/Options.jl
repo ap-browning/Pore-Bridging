@@ -1,9 +1,16 @@
 #=
-
-    Options.jl
-
-    Settings used across all results produced.
-
+#
+#   Options.jl
+#
+#   Options used to produce main results.
+#
+#   Alexander P. Browning
+#       School of Mathematical Sciences
+#       Queensland University of Technology
+#       ap.browning@qut.edu.au  (institution)
+#       ap.browning@icloud.com  (persistent)
+#       https://alexbrowning.me
+#
 =#
 
 ## Fixed parameters
@@ -21,7 +28,7 @@ ub  = [2000.0,  2.0,    0.005,  0.002   ]
 #        this choice shouldn't matter
 θ₀  = lb + rand(length(lb)) .* (ub - lb)
 
-## Start time for PDE
+## Start time for PDE (when initial condition is applied)
 t₀  = 4.0
 
 ## Tolerance to use in local maximisation algorithms

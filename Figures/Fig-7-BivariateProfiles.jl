@@ -1,5 +1,5 @@
 
-using PoresIdentifiability
+using Pores
 using JLD2, PyPlot, StatsBase
 include("Preferences.jl")
 
@@ -8,8 +8,8 @@ fig7,axs = subplots(2,4,figsize=(6.7,3.0))
 fcbar,acbar = subplots(1,1) # For colorbar
 
 # Load results
-@load "Results/MLE_Individual.jld2"
-@load "Results/Profiles2D.jld2"
+@load "Results/Saved/MLE_Individual.jld2"
+@load "Results/Saved/Profiles2D.jld2"
 
 # Loop over P
 for (i_P,L) ∈ enumerate(P)
@@ -73,6 +73,6 @@ end
 NumberPlots!(axs)
 figure(fig7.number);
 plt.tight_layout(pad=0.0,h_pad=0.0,w_pad=-10.0)
-savefig("Figures/Fig-7-BivariateProfiles.pdf")
-figure(fcbar.number); savefig("Figures/Fig-7-BivariateProfiles-Colorbar.pdf")
+savefig("Figures/Saved/Fig-7-BivariateProfiles.pdf")
+figure(fcbar.number); savefig("Figures/Saved/Fig-7-BivariateProfiles-Colorbar.pdf")
 display(fig7)

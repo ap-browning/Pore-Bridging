@@ -1,5 +1,5 @@
 
-using PoresIdentifiability
+using Pores
 using JLD2, PyPlot, StatsBase
 include("Preferences.jl")
 
@@ -11,14 +11,13 @@ fig2,axs = subplots(4,length(Tplot),figsize=(6.7,3))
 figC,axC = subplots(1,1)    # For colorbar
 
 # Load results
-@load "Results/MLE_Individual.jld2"
+@load "Results/Saved/MLE_Individual.jld2"
 
 # Store normalised density in centre (fix plotting artifacts)
 Ucentre = zeros(4,length(Tplot))
 
 # Loop over P
 for (i_P,L) ∈ enumerate(P)
-
 
     # MLE
     D,λ,K,α,τ,u₀ = GetΘ(MLE_Individual[1][i_P][:θ̂],MLE_Individual_Settings[:β],MLE_Individual_Settings[:i_β])
@@ -65,14 +64,13 @@ for (i_P,L) ∈ enumerate(P)
 
     end
 
-
 end
 
 plt.tight_layout(pad=1.0,h_pad=0.5,w_pad=-2.0)
 figure(fig2.number)
-savefig("Figures/Fig-2-Visual.pdf")
+savefig("Figures/Saved/Fig-2-Spatial.pdf")
 display(fig2)
 
 # Plot to get colorbar
 figure(figC.number)
-savefig("Figures/Fig-2-Visual-Colorbar.pdf")
+savefig("Figures/Saved/Fig-2-Spatial-Colorbar.pdf")

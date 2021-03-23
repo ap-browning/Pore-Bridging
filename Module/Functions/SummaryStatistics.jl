@@ -1,16 +1,23 @@
 #=
-    SummaryStatistics.jl
-    Description
-    author:  Alexander P Browning
-    contact: ap.browning@icloud.com
+#
+#   SummaryStatistics.jl
+#
+#   Compute summary statistics given discretised quarter-domain PDE solution U (an N × N matrix)
+#
+#   Full details are available in the supplementary material document.
+#
+#   Alexander P. Browning
+#       School of Mathematical Sciences
+#       Queensland University of Technology
+#       ap.browning@qut.edu.au  (institution)
+#       ap.browning@icloud.com  (persistent)
+#       https://alexbrowning.me
+#
 =#
-@doc """
-    DOCUMENTATION
-"""
 
 function SummaryStatistics(U; L::Float64, τₐ::Float64=0.001)
 
-    # Compute Δx
+    # Mesh size
     N, = size(U)
     Δx = L / (2 * (N - 1))
 
@@ -24,7 +31,7 @@ function SummaryStatistics(U; L::Float64, τₐ::Float64=0.001)
     for i = 1:N-1
         for j = 1:N-1
 
-            # Density profile in square
+            # Density on corners of the square
             V   = Ut[i:i+1,j:j+1]
             Vi  = Up[i:i+1,j:j+1]
 
@@ -33,13 +40,13 @@ function SummaryStatistics(U; L::Float64, τₐ::Float64=0.001)
             area += acont
             peri += pcont
 
-            # Integrate number using quadrature (average in each square)
+            # Integrate number using quadrature (average in each square = trapezoid rule)
             numb += sum(U[i:i+1,j:j+1]) / 4
 
         end
     end
 
-    # Multiple by four (whole domain), scale by Δx
+    # Multiple by four (bring up to whole domain) and scale by Δx
     area *= 4 * Δx^2
     peri *= 4 * Δx
     numb *= 4 * Δx^2
@@ -54,8 +61,10 @@ function SummaryStatistics(U; L::Float64, τₐ::Float64=0.001)
 
 end
 
+# Calculate area and perimeter of unit square
 function AreaPerimContribution(V,Vi,iedge,jedge)
 
+    # Whioch case? Number of positive corners
     Npos = sum(Vi)
 
     # Npos == 0
@@ -83,7 +92,7 @@ function AreaPerimContribution(V,Vi,iedge,jedge)
     # Npos == 1 or 2
     else
 
-        # Compute perimeter contribution
+        # Rotate to the "standard" view
         a,b,c,d = RotatePermutation(V,Vi,Npos)
 
         # Npos == 1
@@ -129,7 +138,7 @@ function AreaPerimContribution(V,Vi,iedge,jedge)
 
 end
 
-
+# Rotation permutations (i.e., identical configerations, just rotated)
 function RotatePermutation(V,Vi,Npos)
 
     if Npos == 2

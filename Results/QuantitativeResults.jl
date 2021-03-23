@@ -1,10 +1,20 @@
 #=
-
-    QuantitativeResults.jl
-
+#
+#   QuantitativeResults.jl
+#
+#   Compute quantitative results (confidence intervals, for example) for display in main document.
+#
+#   Alexander P. Browning
+#       School of Mathematical Sciences
+#       Queensland University of Technology
+#       ap.browning@qut.edu.au  (institution)
+#       ap.browning@icloud.com  (persistent)
+#       https://alexbrowning.me
+#
 =#
 
-using PoresIdentifiability
+# Load modules
+using Pores
 using DataFrames, JLD2, StatsBase
 
 # Number bridged for each pore size
@@ -18,7 +28,7 @@ ProportionEdge = [mean(Data[(Data.Day .== 28) .& (Data.PoreSize .== L),:Proporti
 # Average summary statistics from day 7 to 10
 1 .- [mean(Data[(Data.Day .== 10) .& (Data.PoreSize .== L),:S1_Density]) / mean(Data[(Data.Day .== 7) .& (Data.PoreSize .== L),:S1_Density]) for L ∈ P]
 
-# MLE table
+# MLE and confidence interval table
 @load "Results/MLE_Individual.jld2"
 @load "Results/MLE_Combined.jld2"
 @load "Results/Profiles_Individual.jld2"
@@ -53,7 +63,7 @@ end
 ConfIntsRounded = copy(ConfInts)
 ConfIntsRounded[:,[:ψ̂,:lwr,:upr]] = round.(ConfIntsRounded[:,[:ψ̂,:lwr,:upr]],sigdigits=3)
 
-## (Temp) export to latex table
+## Export to latex table for display in main document
 file = open("ConfInts.tex","w")
 for (i_P,L) ∈ enumerate([P;0])
     IntL = Int(L)

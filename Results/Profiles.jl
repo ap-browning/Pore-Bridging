@@ -1,18 +1,20 @@
 #=
-
-    Profiles.jl
-
-    Compute maximum likelihood estimates for the Porous-Fisher model with
-    quadratic noise function. Repeat analysis using the following summary
-    statistic combinations.
-
-        1. S1_Density and S2_Coverage
-        2. Only S1_Density
-
+#
+#   Profiles.jl
+#
+#   Compute univariate profile likelihood functions for each unknown parameter.
+#
+#   Alexander P. Browning
+#       School of Mathematical Sciences
+#       Queensland University of Technology
+#       ap.browning@qut.edu.au  (institution)
+#       ap.browning@icloud.com  (persistent)
+#       https://alexbrowning.me
+#
 =#
 
-# Load module
-using PoresIdentifiability
+# Load modules
+using Pores
 using StatsBase, Statistics, .Threads, JLD2, TimerOutputs
 
 # Load options
@@ -22,9 +24,10 @@ include("Options.jl")
 include("StandardDeviations.jl")
 
 # Load maximum likelihood estimates
-@load "Results/MLE_Individual.jld2"
-@load "Results/MLE_Combined.jld2"
+@load "Results/Saved/MLE_Individual.jld2"
+@load "Results/Saved/MLE_Combined.jld2"
 
+################################################
 ## INDIVIDUAL (PER PORE SIZE)
 
 # Summary statistic combinations to use
@@ -33,9 +36,10 @@ C = [[:S1_Density, :S2_Coverage], [:S1_Density]]
 # Initialise storage
 Profiles_Individual = [[Dict() for i = 1:length(P)] for i = 1:length(C)]
 
-# Loop over C and P
+# Compute and time main result
 t1 = @elapsed begin
 
+    # Loop over C and P
     @time for (i_C,Cᵢ) ∈ enumerate(C), (i_P,L) ∈ enumerate(P)
 
         # Construct log likelihood function
@@ -74,8 +78,9 @@ Profiles_Individual_Settings = Dict(
     :MLE_results => MLE_Individual, :MLE_settings => MLE_Individual_Settings)
 
 # Save
-@save "Results/Profiles_Individual.jld2" Profiles_Individual Profiles_Individual_Settings
+@save "Results/Saved/Profiles_Individual.jld2" Profiles_Individual Profiles_Individual_Settings
 
+################################################
 ## COMBINED (ALL PORE SIZES)
 
 # Summary statistic combinations to use
@@ -131,4 +136,4 @@ Profiles_Combined_Settings = Dict(
     :MLE_results => MLE_Combined, :MLE_settings => MLE_Combined_Settings)
 
 # Save
-@save "Results/Profiles_Combined.jld2" Profiles_Combined Profiles_Combined_Settings
+@save "Results/Saved/Profiles_Combined.jld2" Profiles_Combined Profiles_Combined_Settings
