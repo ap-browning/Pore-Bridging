@@ -33,13 +33,14 @@ module Pores
 
     # Load functions
     include("Functions/SolvePDE.jl")
+    include("Functions/SolvePDE_Neumann.jl")
     include("Functions/SummaryStatistics.jl")
     include("Functions/Maximise.jl")
     include("Functions/Profile.jl")
     include("Functions/LogLikelihood.jl")
 
     # Functions callable once `using Pores` is called
-    export SolvePDE, SummaryStatistics, Maximise, FitModel, Profile, LogLikelihood, GetΘ, ConfidenceInterval
+    export SolvePDE, SolvePDE_Neumann, SummaryStatistics, Maximise, FitModel, Profile, LogLikelihood, GetΘ, ConfidenceInterval
 
     # Import data
     Data = DataFrame(CSV.File("Module/Data.csv"))

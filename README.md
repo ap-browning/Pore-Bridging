@@ -1,6 +1,6 @@
 # Pores Bridging
 
- Code to perform the model-based data analysis with the Porous-Fisher to explore pore bridging by osteoblastic cells in 3D printed scaffolds. This repository is supplementary material for the preprint "Model-based data analysis of osteoblastic tissue growth in shallow 3D printed scaffolds" available on [bioRxiv](https://www.biorxiv.org).
+Code to perform the model-based data analysis with the Porous-Fisher to explore pore bridging by osteoblastic cells in 3D printed scaffolds. This repository is supplementary material for the preprint "Model-based data analysis of osteoblastic tissue growth in shallow 3D printed scaffolds" available on [bioRxiv](https://www.biorxiv.org).
 
 The majority of the code contains the `Julia` module `Pores` (`Module/Pores.jl`) that exports the experimental data and functions used to perform the analysis. The `Results` folder contains code that performs the analysis displayed in the main document (the `Results/Supplementary` folder does the same for the supplementary material document). The `Figures` folder contains scripts to produce and export a `.pdf` for each figure in the document. 
 

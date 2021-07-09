@@ -10,6 +10,8 @@ Tplot = collect(4.0:3.0:28.0)
 fig2,axs = subplots(4,length(Tplot),figsize=(6.7,3))
 figC,axC = subplots(1,1)    # For colorbar
 
+fig2b,axsb = subplots(1,4,figsize=(6.7,1.2))
+
 # Load results
 @load "Results/Saved/MLE_Individual.jld2"
 
@@ -62,15 +64,41 @@ for (i_P,L) ∈ enumerate(P)
             colorbar(c,axC)
         end
 
+        # Plot concentration profile
+        ax2 = axsb[i_P]
+        C = U_q[end,:]
+        C = [C; C[end-1:-1:1]]
+        ax2.plot(range(0.0,L,length=length(C)),C,color=PoreSizeCols[i_P],alpha=i_T / length(Tplot))
+
+        # Style axis 2
+        ax2.set_xlim([-L*0.01,L*1.01])
+        ax2.set_xticks(0.0:100.0:L)
+        ax2.set_xlabel("x (µm)")
+        ax2.set_ylim([-0.00025,0.00425])
+        ax2.set_yticks(Stks[:S1_Density][1:end-1])
+        if i_P == 1
+            ax2.set_ylabel(Snms[:S1_Density])
+        else
+            ax2.set_yticklabels([])
+        end
+
     end
 
 end
 
-plt.tight_layout(pad=1.0,h_pad=0.5,w_pad=-2.0)
 figure(fig2.number)
+plt.tight_layout(pad=1.0,h_pad=0.5,w_pad=-2.0)
 savefig("Figures/Saved/Fig-2-Spatial.pdf")
 display(fig2)
+
+figure(fig2b.number)
+NumberPlots!(axsb)
+plt.tight_layout(pad=0.0,h_pad=0.5,w_pad=0.5)
+savefig("Figures/Saved/Fig-2b-Spatial.pdf")
+display(fig2b)
 
 # Plot to get colorbar
 figure(figC.number)
 savefig("Figures/Saved/Fig-2-Spatial-Colorbar.pdf")
+
+display(fig2b)
